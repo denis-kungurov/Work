@@ -1,0 +1,72 @@
+﻿@using WebApplication1.Controllers
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "../Shared/_Layout.cshtml";
+}
+<div class="col-lg-12">
+    <form class="form-horizontal col-lg-offset-2 col-lg-8" style="background-color: gainsboro; margin-top: 50px; margin-right: 30px">
+        <fieldset style="padding: 15px; padding-left: 0; padding-right: 0">
+            <div class="row">
+                <button type="button" class="col-lg-3" style="margin-left: 30px" onclick= "load()" id="LoadBtn"> Load News </button>
+                <button type="button" class="col-lg-3" style="margin-left: 30px" onclick="del()" id="DelBtn"> Delete Selected News </button>
+                <span class="col-lg-offset-2 col-lg-3">
+                    <span style="float: right; margin-right: 30px">
+                        News Count
+                        <span class="badge" id="Number">0</span>
+                    </span>
+                </span>
+            </div>
+            <div class="col-lg-12" style="margin-bottom: 15px"></div>
+            <div class="container-fluid">
+                <div class="nav-tabs tabs-left">
+                    
+                    <ul class="nav nav-tabs nav-stacked col-md-4" style="background-color: whitesmoke; padding: 0;margin-right: 50px; height: 650px" id="NewsTitles">
+                        
+                    </ul>
+                    <div class="col-md-7 tab-content" style="background-color: whitesmoke; height: 650px" id="NewsContents">
+                        
+                    </div>
+
+                </div>
+            </div>
+        </fieldset>
+    </form>
+</div>
+
+
+<script type="text/javascript">
+    function load() {
+        var loading = '<button type="button" disabled = "true" class="col-lg-3" style="margin-left: 30px" id="LoadBtn"> Loading News... </button>';
+        var ready = '<button type="button" class="col-lg-3" style="margin-left: 30px" onclick= "load()" id="LoadBtn"> Load News </button>';
+        $('#LoadBtn').replaceWith(loading);
+        $.ajax({
+            url: '../News/Load',
+            success: function(data) {
+                var news = JSON.parse(data);
+                for (var i = 0; i < news.length; i++) {
+                    if (i == 0) {
+                        $('#NewsTitles').append('<li class="active" ><a href="#' + i + '" data-toggle="tab">' + news[i].title + '</a></li>');
+                        $('#NewsContents').append('<div class="tab-pane active" id="' + i + '">' + '<center><b style = "font-size: 18px">' + news[i].title + '</b></center>' + '</br>' + news[i].content + '</div>');
+                    } else {
+                        $('#NewsTitles').append('<li><a href="#' + i + '" data-toggle="tab">' + news[i].title + '</a></li>');
+                        $('#NewsContents').append('<div class="tab-pane" id="' + i + '">' + '<center><b style = "font-size: 18px">' + news[i].title + '</b></center>' + '</br>' + news[i].content + '</div>');
+                    }
+                }
+                $('#Number').replaceWith('<span class="badge" id="Number">' + $('#NewsTitles li').size() + '</span>');
+            }
+        });
+        $('#LoadBtn').replaceWith(ready);
+    };
+
+    function del() {
+        var loading = '<button type="button" class="col-lg-3" disabled = "true" style="margin-left: 30px" onclick="del()" id="DelBtn"> Deleting... </button>';
+        var ready = '<button type="button" class="col-lg-3" style="margin-left: 30px" onclick="del()" id="DelBtn"> Delete Selected News </button>';
+        $('#DelBtn').replaceWith(loading);
+        $('#NewsContents .active').replaceWith(' ');
+        $('#NewsTitles .active').replaceWith(' ');
+        $('#Number').replaceWith('<span class="badge" id="Number">' + $('#NewsTitles li').size() + '</span>');
+        $('#DelBtn').replaceWith(ready);
+    };
+</script>
